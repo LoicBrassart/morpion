@@ -26,13 +26,22 @@ function App() {
   function hClick(x, y) {
     if (board[x][y]) return;
 
-    const newBoard = [];
-    for (let i = 0; i <= 2; i += 1) {
-      newBoard[i] = [];
-      for (let j = 0; j <= 2; j += 1) {
-        newBoard[i][j] = board[i][j];
-      }
-    }
+    // *Ugly code, committed to show why that's a crappy idea*
+    // We create a duplicate of our "board" state by copying it's values one by one... and the code would be different if we had objects, or functions, or...
+    // const newBoard = [];
+    // for (let i = 0; i <= 2; i += 1) {
+    //   newBoard[i] = [];
+    //   for (let j = 0; j <= 2; j += 1) {
+    //     newBoard[i][j] = board[i][j];
+    //   }
+    // }
+
+    // Much better!
+    // We create our "newBoard" by
+    // - generating a string from the JS array (feasible with any JS data type)
+    // - generating a JS value from a string (taht's called "parsing" and it's available in most languages)
+    // This code works, whatever the structure of our original state ! <3
+    const newBoard = JSON.parse(JSON.stringify(board));
 
     newBoard[x][y] = currPlayer;
     setBoard(newBoard);
