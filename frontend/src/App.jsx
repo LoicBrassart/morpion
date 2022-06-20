@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -8,20 +8,28 @@ function App() {
     [null, null, null],
   ]);
   const [currPlayer, setCurrPlayer] = useState("X");
+  const [winner, setWinner] = useState(null);
 
-  // WiP: This function must return the name of the winning player || null
-  // function checkWinner() {
-  //   const combinations = [
-  //     [board[0][0], board[0][1], board[0][2]],
-  //     [board[1][0], board[1][1], board[1][2]],
-  //     [board[2][0], board[2][1], board[2][2]],
-  //     [board[0][0], board[1][0], board[2][0]],
-  //     [board[0][1], board[1][1], board[2][1]],
-  //     [board[0][2], board[1][2], board[2][2]],
-  //     [board[0][0], board[1][1], board[2][2]],
-  //     [board[0][2], board[1][1], board[2][0]],
-  //   ];
-  // }
+  // WiP: This function must set the winning player state
+  function checkWinner() {
+    const combinations = [
+      [board[0][0], board[0][1], board[0][2]],
+      [board[1][0], board[1][1], board[1][2]],
+      [board[2][0], board[2][1], board[2][2]],
+      [board[0][0], board[1][0], board[2][0]],
+      [board[0][1], board[1][1], board[2][1]],
+      [board[0][2], board[1][2], board[2][2]],
+      [board[0][0], board[1][1], board[2][2]],
+      [board[0][2], board[1][1], board[2][0]],
+    ];
+
+    for (const combo of combinations) {
+      if (combo[0] && combo[0] === combo[1] && combo[1] === combo[2]) {
+        setWinner(combo[0]);
+        return;
+      }
+    }
+  }
 
   function hClick(x, y) {
     if (board[x][y]) return;
@@ -39,7 +47,7 @@ function App() {
     // Much better!
     // We create our "newBoard" by
     // - generating a string from the JS array (feasible with any JS data type)
-    // - generating a JS value from a string (taht's called "parsing" and it's available in most languages)
+    // - generating a JS value from a string (that's called "parsing" and it's available in most languages)
     // This code works, whatever the structure of our original state ! <3
     const newBoard = JSON.parse(JSON.stringify(board));
 
@@ -49,6 +57,9 @@ function App() {
     if (currPlayer === "X") setCurrPlayer("O");
     else setCurrPlayer("X");
   }
+
+  // Everytime the "board" state changes, we check for a winner
+  useEffect(checkWinner, [board]);
 
   return (
     <div>
@@ -65,6 +76,7 @@ function App() {
                   onClick={() => {
                     hClick(i, j);
                   }}
+                  disabled={winner}
                 >
                   {square}
                 </button>
@@ -73,6 +85,11 @@ function App() {
           </div>
         );
       })}
+      {winner ? (
+        <p>{winner} has won !</p>
+      ) : (
+        <p>Waiting for {currPlayer} to play...</p>
+      )}
     </div>
   );
 }
